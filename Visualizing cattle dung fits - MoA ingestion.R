@@ -542,7 +542,11 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   inits_U = setinits.Dung(D0 = as.numeric(params["DR"]), P0=0, Dung0=0)
   
   # Simulation for high food, 0 dung, uninfected  
-  Events_HF_D0 = Dung.events(initial.food = 10.76, initial.dung = 0) # Events are same for infected and uninfected
+  Events_HF_D0 = Dung.events(initial.food = 10.76, initial.dung = 0)
+  # Events have to condition on survival until diagnosis for infected
+  Events_HF_D0_I = rbind(Events_HF_D0, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_HF_D0_I = Events_HF_D0_I[order(Events_HF_D0_I$time),]
+  
   capture.output(HF_D0_U <- data.frame(lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                              params,  rtol=1e-6, atol=1e-6,   
@@ -553,12 +557,15 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(HF_D0_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                   initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                   params,  rtol=1e-6, atol=1e-6,   
-                                  events = list(data = Events_HF_D0)))
+                                  events = list(data = Events_HF_D0_I)))
   if(attributes(HF_D0_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
 
   # High food, 0.04 dung, uninfected
   inits_U = setinits.Dung(D0 = as.numeric(params["DR"]), P0=0, Dung0=40)
-  Events_HF_D0.04 = Dung.events(initial.food = 10.76, initial.dung = 40) # Events are same for infected and uninfected
+  Events_HF_D0.04 = Dung.events(initial.food = 10.76, initial.dung = 40) 
+  # Events have to condition on survival until diagnosis for infected
+  Events_HF_D0.04_I = rbind(Events_HF_D0.04, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_HF_D0.04_I = Events_HF_D0.04_I[order(Events_HF_D0.04_I$time),]# Events are same for infected and uninfected
   
   capture.output(HF_D0.04_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -571,12 +578,15 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(HF_D0.04_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_HF_D0.04)))
+                                     events = list(data = Events_HF_D0.04_I)))
   if(attributes(HF_D0.04_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # High food, 0.08 dung, uninfected
   inits_U = setinits.Dung(D0 = as.numeric(params["DR"]), P0=0, Dung0=80)
-  Events_HF_D0.08 = Dung.events(initial.food = 10.76, initial.dung = 80) # Events are same for infected and uninfected
+  Events_HF_D0.08 = Dung.events(initial.food = 10.76, initial.dung = 80)
+  # Events have to condition on survival until diagnosis for infected
+  Events_HF_D0.08_I = rbind(Events_HF_D0.08, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_HF_D0.08_I = Events_HF_D0.08_I[order(Events_HF_D0.08_I$time),]# Events are same for infected and uninfected
   
   capture.output(HF_D0.08_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -589,13 +599,15 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(HF_D0.08_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_HF_D0.08)))
+                                     events = list(data = Events_HF_D0.08_I)))
   if(attributes(HF_D0.08_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   
   # High food, 0.12 dung, uninfected
   inits_U = setinits.Dung(D0 = as.numeric(params["DR"]), P0=0, Dung0=120)
-  Events_HF_D0.12 = Dung.events(initial.food = 10.76, initial.dung = 120) # Events are same for infected and uninfected
+  Events_HF_D0.12 = Dung.events(initial.food = 10.76, initial.dung = 120)   # Events have to condition on survival until diagnosis for infected
+  Events_HF_D0.12_I = rbind(Events_HF_D0.12, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_HF_D0.12_I = Events_HF_D0.12_I[order(Events_HF_D0.12_I$time),]
   
   capture.output(HF_D0.12_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -608,12 +620,14 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(HF_D0.12_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_HF_D0.12)))
+                                     events = list(data = Events_HF_D0.12_I)))
   if(attributes(HF_D0.12_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # High food, 0.16 dung, uninfected
   inits_U = setinits.Dung(D0 = as.numeric(params["DR"]), P0=0, Dung0=160)
-  Events_HF_D0.16 = Dung.events(initial.food = 10.76, initial.dung = 160) # Events are same for infected and uninfected
+  Events_HF_D0.16 = Dung.events(initial.food = 10.76, initial.dung = 160)   # Events have to condition on survival until diagnosis for infected
+  Events_HF_D0.16_I = rbind(Events_HF_D0.16, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_HF_D0.16_I = Events_HF_D0.16_I[order(Events_HF_D0.16_I$time),]# Events are same for infected and uninfected
   
   capture.output(HF_D0.16_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -626,12 +640,14 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(HF_D0.16_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_HF_D0.16)))
+                                     events = list(data = Events_HF_D0.16_I)))
   if(attributes(HF_D0.16_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # High food, 0.20 dung, uninfected
   inits_U = setinits.Dung(D0 = as.numeric(params["DR"]), P0=0, Dung0=200)
-  Events_HF_D0.20 = Dung.events(initial.food = 10.76, initial.dung = 200) # Events are same for infected and uninfected
+  Events_HF_D0.20 = Dung.events(initial.food = 10.76, initial.dung = 200)   # Events have to condition on survival until diagnosis for infected
+  Events_HF_D0.20_I = rbind(Events_HF_D0.20, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_HF_D0.20_I = Events_HF_D0.20_I[order(Events_HF_D0.20_I$time),]# Events are same for infected and uninfected
   
   capture.output(HF_D0.20_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -644,13 +660,16 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(HF_D0.20_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_HF_D0.20)))
+                                     events = list(data = Events_HF_D0.20_I)))
   if(attributes(HF_D0.20_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   ### Low food sims
   inits_I = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), Dung0=0)
   inits_U = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), P0=0, Dung0=0)
-  Events_LF_D0 = Dung.events(initial.food = 0.538, initial.dung = 0) # Events are same for infected and uninfected
+  Events_LF_D0 = Dung.events(initial.food = 0.538, initial.dung = 0) 
+  # Events have to condition on survival until diagnosis for infected
+  Events_LF_D0_I = rbind(Events_LF_D0, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_LF_D0_I = Events_LF_D0_I[order(Events_LF_D0_I$time),]# Events are same for infected and uninfected
   
   capture.output(LF_D0_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                   initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -662,12 +681,15 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(LF_D0_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                   initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                   params,  rtol=1e-6, atol=1e-6,   
-                                  events = list(data = Events_LF_D0)))
+                                  events = list(data = Events_LF_D0_I)))
   if(attributes(LF_D0_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # Low food, 0.04 dung, uninfected
   inits_U = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), P0=0, Dung0=40)
-  Events_LF_D0.04 = Dung.events(initial.food = 0.538, initial.dung = 40) # Events are same for infected and uninfected
+  Events_LF_D0.04 = Dung.events(initial.food = 0.538, initial.dung = 40) 
+  # Events have to condition on survival until diagnosis for infected
+  Events_LF_D0.04_I = rbind(Events_LF_D0.04, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_LF_D0.04_I = Events_LF_D0.04_I[order(Events_LF_D0.04_I$time),]# Events are same for infected and uninfected
   
   capture.output(LF_D0.04_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -680,12 +702,14 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(LF_D0.04_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_LF_D0.04)))
+                                     events = list(data = Events_LF_D0.04_I)))
   if(attributes(LF_D0.04_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # Low food, 0.08 dung, uninfected
   inits_U = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), P0=0, Dung0=80)
-  Events_LF_D0.08 = Dung.events(initial.food = 0.538, initial.dung = 80) # Events are same for infected and uninfected
+  Events_LF_D0.08 = Dung.events(initial.food = 0.538, initial.dung = 80)   # Events have to condition on survival until diagnosis for infected
+  Events_LF_D0.08_I = rbind(Events_LF_D0.08, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_LF_D0.08_I = Events_LF_D0.08_I[order(Events_LF_D0.08_I$time),]
   
   capture.output(LF_D0.08_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -698,13 +722,15 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(LF_D0.08_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_LF_D0.08)))
+                                     events = list(data = Events_LF_D0.08_I)))
   if(attributes(LF_D0.08_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   
   # Low food, 0.12 dung, uninfected
   inits_U = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), P0=0, Dung0=120)
-  Events_LF_D0.12 = Dung.events(initial.food = 0.538, initial.dung = 120) # Events are same for infected and uninfected
+  Events_LF_D0.12 = Dung.events(initial.food = 0.538, initial.dung = 120)   # Events have to condition on survival until diagnosis for infected
+  Events_LF_D0.12_I = rbind(Events_LF_D0.12, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_LF_D0.12_I = Events_LF_D0.12_I[order(Events_LF_D0.12_I$time),]
   
   capture.output(LF_D0.12_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -717,12 +743,14 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(LF_D0.12_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_LF_D0.12)))
+                                     events = list(data = Events_LF_D0.12_I)))
   if(attributes(LF_D0.12_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # Low food, 0.16 dung, uninfected
   inits_U = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), P0=0, Dung0=160)
-  Events_LF_D0.16 = Dung.events(initial.food = 0.538, initial.dung = 160) # Events are same for infected and uninfected
+  Events_LF_D0.16 = Dung.events(initial.food = 0.538, initial.dung = 160)   # Events have to condition on survival until diagnosis for infected
+  Events_LF_D0.16_I = rbind(Events_LF_D0.16, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_LF_D0.16_I = Events_LF_D0.16_I[order(Events_LF_D0.16_I$time),]
   
   capture.output(LF_D0.16_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -735,12 +763,14 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(LF_D0.16_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_LF_D0.16)))
+                                     events = list(data = Events_LF_D0.16_I)))
   if(attributes(LF_D0.16_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   
   # Low food, 0.20 dung, uninfected
   inits_U = setinits.Dung(F0=0.538, D0 = as.numeric(params["DR"]), P0=0, Dung0=200)
-  Events_LF_D0.20 = Dung.events(initial.food = 0.538, initial.dung = 200) # Events are same for infected and uninfected
+  Events_LF_D0.20 = Dung.events(initial.food = 0.538, initial.dung = 200)   # Events have to condition on survival until diagnosis for infected
+  Events_LF_D0.20_I = rbind(Events_LF_D0.20, data.frame("var" = "HAZ", "time" = 28, "value" = 0, "method" = "replace"))
+  Events_LF_D0.20_I = Events_LF_D0.20_I[order(Events_LF_D0.20_I$time),]
   
   capture.output(LF_D0.20_U <- lsoda(inits_U, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
@@ -753,7 +783,7 @@ solve.DEB.Dung<-function(params, duration=dur.D){
   capture.output(LF_D0.20_I <- lsoda(inits_I, 0:duration, func = "derivs", dllname = "DEBDung_MoA_ingest", 
                                      initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                                      params,  rtol=1e-6, atol=1e-6,   
-                                     events = list(data = Events_LF_D0.20)))
+                                     events = list(data = Events_LF_D0.20_I)))
   if(attributes(LF_D0.20_I)$istate[1] != 2){print(inits_I);return(HF_D0_U)}
   ### End low food sims
   
@@ -827,7 +857,7 @@ make.states<-function(params, inits.R, inits.P, inits.S, duration.R, duration.P,
   result.P = extract.data(result.P, start.age=14)
   Survival.P = result.P$Survival
   Survival.P[(0:39)*19 + 1] = 1 # This correctly overwrites the survival probability to condition on survival to start experiment
-  # Separate the infected vs uninfected to condition on infected surviving to day 42, first diagnosis
+  # Separate the infected vs uninfected to condition on infected surviving to day 28, first diagnosis
     Survival.P.inf = Survival.P[1:(20*19)] # only infected
     Survival.P.inf[which(1:380 %% 19 %in% 1:5)] = 1 # conditions on diagnosis
     Survival.P.un = Survival.P[-(1:(20*19))] #only uninfected
@@ -848,6 +878,18 @@ make.states<-function(params, inits.R, inits.P, inits.S, duration.R, duration.P,
   result.D = extract.data(result.D)
   # This fix fore survival data is currently specific to sample size (162) and duration (17) of the experiment
   Survival.D = result.D$Survival
+  # Conditions the survival probability to 1 through diagnosis for the infected
+    # Separate out infecteds
+    HF_U = Survival.D[1:(36*17)]
+    HF_I = Survival.D[((36*17)+1):(83*17)]
+    LF_U = Survival.D[((83*17)+1):(119*17)]
+    LF_I = Survival.D[-(1:((119*17)))]
+    # Condition on diagnosis
+    HF_I[which(1:799 %% 17 %in% 1:5)] = 1 # conditions on diagnosis
+    LF_I[which(1:731 %% 17 %in% 1:5)] = 1 # conditions on diagnosis
+  # Reassemble
+  Survival.D = c(HF_U, HF_I, LF_U, LF_I)
+  # Aligns for interval censoring
   Survival.D[-((1:162)*17)] = Survival.D[-((1:162)*17)] - Survival.D[-(1+(0:161)*17)]
 
   return(list(time=result.R$time, L=result.R$LG, RH=result.R$RH, RP=result.R$RP, SurvR=Survival.R, 
@@ -998,8 +1040,9 @@ full.likelihood.trans<-function(x){
     print("Infinite NLL")
     ll.vector = c(llik.L, llik.Negg, llik.Nworms, llik.Survival, 
                    llik.L2, llik.Negg2, llik.Nworms2, llik.Survival2,
-                   llik.L3f, llik.L3c, llik.Nworms3, llik.Survival3+
+                   llik.L3f, llik.L3c, llik.Nworms3, llik.Survival3,
                    llik.L4, llik.Negg4, llik.Nworms4, llik.Survival4)
+    print(ll.vector)
     print(paste0("This piece is NA: ", which(is.na(ll.vector))))
     print(paste0("This piece is NaN: ", which(!is.finite(ll.vector))))
     return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
@@ -1118,7 +1161,7 @@ full.likelihood<-function(x){
     print("Infinite NLL")
     ll.vector = c(llik.L, llik.Negg, llik.Nworms, llik.Survival, 
                   llik.L2, llik.Negg2, llik.Nworms2, llik.Survival2,
-                  llik.L3f, llik.L3c, llik.Nworms3, llik.Survival3+
+                  llik.L3f, llik.L3c, llik.Nworms3, llik.Survival3, 
                     llik.L4, llik.Negg4, llik.Nworms4, llik.Survival4)
     print(paste0("This piece is NA: ", which(is.na(ll.vector))))
     print(paste0("This piece is NaN: ", which(!is.finite(ll.vector))))
