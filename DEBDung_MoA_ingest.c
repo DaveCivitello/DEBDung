@@ -70,7 +70,7 @@ double aM = maxYield*iM;
 /* Also, this is derived from a substitutable, interacting, sequential supply SU, similar to Lavaud et al. 2014, J Sea Research */
 double thetaF = a*y[0]*(a*(DungMass + y[0])*rho + iM)/((a*(DungMass + y[0]) + iM)*(a*y[0]*rho + iM));
 double thetaD = a*DungMass*iM/((a*(DungMass + y[0]) + iM)*(a*y[0]*rho + iM));
-double fH = (yEF*thetaF + yED*thetaD)/maxYield/(1 + s);
+double fH = (yEF3*thetaF + yED*thetaD)/maxYield/(1 + s);
 
 double Chi = M/(1 + EM);
 double fP = y[2]/(y[2] + eh);
