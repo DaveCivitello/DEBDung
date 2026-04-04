@@ -3,7 +3,6 @@
 
 library("adaptMCMC") # needed for MCMC
 library("deSolve") # needed to simulate the models
-library("tidyverse") # needed for plotting
 #library("mvtnorm")
 #library("LaplacesDemon")
 #library("coda")
@@ -48,15 +47,6 @@ data = list(t = data$Date, L = data$Length, Negg = data$C_Eggs, Nworms = data$C_
             L3 = data3$Length_F, L3C = data3$Length_C, Negg3 = data3$C_Eggs, Nworms3 = data3$C_Cercs, Alive3=data3$F_last_alive,
             L4 = data4$Length, Negg4 = data4$C_Eggs, Nworms4 = data4$C_Worms, Alive4 = data4$Last_Alive)
 
-# Dung experiment summary
-dung_summary = data4 %>% group_by(Week, FoodType, Infected, Dung_160ml) %>%
-  summarise(mean_L = mean(Length, na.rm=T), SE_L = sd(Length, na.rm=T)/sqrt(n()),
-            mean_E = mean(C_Eggs, na.rm=T), SE_E = sd(C_Eggs, na.rm=T)/sqrt(n()),
-            mean_W = mean(C_Worms, na.rm=T), SE_W = sd(C_Worms, na.rm=T)/sqrt(n()),
-            Survival = mean(Alive),
-            Day = mean(Week)*7)
-
-dung_summary %>% filter(Dung_160ml == 32 & FoodType =="High" & Infected == 1) %>% select(Week, Survival)
 
 # 2 - Initial conditions
 setinits.Food<-function(F0 = 16.5, L0=0.7, e0=0.9, D0 = 0, RH0 = 0, P0 = 0, RP0 = 0, DAM0=0, HAZ0=0){
@@ -197,599 +187,48 @@ DEB_dung_vis = function(pars){
                             events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
   dung0
   
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=0, Dung0=40)
-  dung40 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung40
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=0, Dung0=80)
-  dung80 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung80
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=0, Dung0=120)
-  dung120 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung120
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=0, Dung0=160)
-  dung160 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung160
-  
   inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=0, Dung0=200)
-  dung200 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
+  dung <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
                            initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
                            params.t[1:34],  rtol=1e-6, atol=1e-6,
                            events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung200
+  dung
   
-  control_df = dung_summary %>% filter(Dung_160ml == 0, Infected==0, FoodType=="High")
-  dung_40 = dung_summary %>% filter(Dung_160ml == 6.4, Infected==0, FoodType=="High")
-  dung_80 = dung_summary %>% filter(Dung_160ml == 12.8, Infected==0, FoodType=="High")
-  dung_120 = dung_summary %>% filter(Dung_160ml == 19.2, Infected==0, FoodType=="High")
-  dung_160 = dung_summary %>% filter(Dung_160ml == 25.6, Infected==0, FoodType=="High")
-  dung_200 = dung_summary %>% filter(Dung_160ml == 32, Infected==0, FoodType=="High")
-  
-  
-  par(mfrow=c(2, 2))
-  # plot(F ~ time, data=dung0, type="l", lty=2, col="turquoise1", ylab="Food abundance")
-  # lines(F ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(F ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(F ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(F ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(F ~ time, data=dung200, type="l", col="black")
-  # 
-  # plot(Dung ~ time, data=dung0, type="l", col="turquoise1", ylab="Dung abundance", ylim=c(0,1.1*inits["Dung"]))
-  # lines(Dung ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(Dung ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(Dung ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(Dung ~ time, data=dung200, type="l", col="black")
-  
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
-  lines(LG ~ time, data=dung40, type="l", col="chocolate1")
-  lines(LG ~ time, data=dung80, type="l", col="chocolate2")
-  lines(LG ~ time, data=dung120, type="l", col="chocolate3")
-  lines(LG ~ time, data=dung160, type="l", col="chocolate4")
-  lines(LG ~ time, data=dung200, type="l", col="black")
-  lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
-  lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
-  lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
-  lines(L ~ time, data=dung160, type="l", lty=2, col="chocolate4")
-  lines(L ~ time, data=dung200, type="l", lty=2, col="black")
-  points(mean_L ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_L ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_L ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_L ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_L ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_L ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(e ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0, 1.1*max(dung200$e, dung0$e)), ylab="Snail reserve density")
-  # lines(e ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(e ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(e ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(e ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(e ~ time, data=dung200, type="l", col="black")
-  
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung$RH/0.015, dung0$RH/0.015, control_df$mean_E)))
-  lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RH/0.015 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RH/0.015 ~ time, data=dung200, type="l", col="black")
-  points(mean_E ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_E ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_E ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_E ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_E ~ Day, dung_200, pch=21, bg="black")
-  
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative cercariae release")
-  lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RP/4e-5 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RP/4e-5 ~ time, data=dung200, type="l", col="black")
-  points(mean_W ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_W ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_W ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_W ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_W ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_W ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(DAM ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 1", ylim=c(0, 1.1*max(dung$DAM, dung0$DAM)))
-  # lines(DAM ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["delta0"], b=0, lty=2, col="red")
-  # 
-  # plot(DAM2 ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 2", ylim=c(0, 1.1*max(dung200$DAM2, dung0$DAM2,params.t["d0M"])))
-  # lines(DAM2 ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM2 ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM2 ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM2 ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM2 ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
-  # abline(a=params.t["d02"], b=0, lty=2, col="red")
-  
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
-  lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
-  lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
-  lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
-  lines(Survival ~ time, data=dung160, type="l", col="chocolate4")
-  lines(Survival ~ time, data=dung200, type="l", col="black")
-  points(Survival ~ Day, data = control_df, pch=21, bg="turquoise1")
-  points(Survival ~ Day, dung_40, pch=21, bg="chocolate1", col="chocolate1", typ="b")
-  points(Survival ~ Day, dung_80, pch=21, bg="chocolate2", col="chocolate2", typ="b")
-  points(Survival ~ Day, dung_120, pch=21, bg="chocolate3", col="chocolate3", typ="b")
-  points(Survival ~ Day, dung_160, pch=21, bg="chocolate4", col="chocolate4", typ="b")
-  points(Survival ~ Day, dung_200, pch=21, bg="black", col="black", typ="b")
-  
-  ### Infected ###
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=0)
-  dung0 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                            initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                            params.t[1:34],  rtol=1e-6, atol=1e-6,
-                            events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung0
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=40)
-  dung40 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                             initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                             params.t[1:34],  rtol=1e-6, atol=1e-6,
-                             events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung40
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=80)
-  dung80 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                             initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                             params.t[1:34],  rtol=1e-6, atol=1e-6,
-                             events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung80
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=120)
-  dung120 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung120
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=160)
-  dung160 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung160
-  
-  inits = setinits.Dung(D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=200)
-  dung200 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 10.76, initial.dung = as.numeric(inits["Dung"])))))
-  dung200
-  
-  control_df = dung_summary %>% filter(Dung_160ml == 0, Infected==1, FoodType=="High")
-  dung_40 = dung_summary %>% filter(Dung_160ml == 6.4, Infected==1, FoodType=="High")
-  dung_80 = dung_summary %>% filter(Dung_160ml == 12.8, Infected==1, FoodType=="High")
-  dung_120 = dung_summary %>% filter(Dung_160ml == 19.2, Infected==1, FoodType=="High")
-  dung_160 = dung_summary %>% filter(Dung_160ml == 25.6, Infected==1, FoodType=="High")
-  dung_200 = dung_summary %>% filter(Dung_160ml == 32, Infected==1, FoodType=="High")
-  
-  
-  par(mfrow=c(2, 2))
-  # plot(F ~ time, data=dung0, type="l", lty=2, col="turquoise1", ylab="Food abundance")
-  # lines(F ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(F ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(F ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(F ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(F ~ time, data=dung200, type="l", col="black")
-  # 
-  # plot(Dung ~ time, data=dung0, type="l", col="turquoise1", ylab="Dung abundance", ylim=c(0,1.1*inits["Dung"]))
-  # lines(Dung ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(Dung ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(Dung ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(Dung ~ time, data=dung200, type="l", col="black")
-  
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
-  lines(LG ~ time, data=dung40, type="l", col="chocolate1")
-  lines(LG ~ time, data=dung80, type="l", col="chocolate2")
-  lines(LG ~ time, data=dung120, type="l", col="chocolate3")
-  lines(LG ~ time, data=dung160, type="l", col="chocolate4")
-  lines(LG ~ time, data=dung200, type="l", col="black")
-  lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
-  lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
-  lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
-  lines(L ~ time, data=dung160, type="l", lty=2, col="chocolate4")
-  lines(L ~ time, data=dung200, type="l", lty=2, col="black")
-  points(mean_L ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_L ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_L ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_L ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_L ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_L ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(e ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0, 1.1*max(dung200$e, dung0$e)), ylab="Snail reserve density")
-  # lines(e ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(e ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(e ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(e ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(e ~ time, data=dung200, type="l", col="black")
-  
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung$RH/0.015, dung0$RH/0.015, control_df$mean_E)))
-  lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RH/0.015 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RH/0.015 ~ time, data=dung200, type="l", col="black")
-  points(mean_E ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_E ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_E ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_E ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_E ~ Day, dung_200, pch=21, bg="black")
-  
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,20000), ylab="Cumulative cercariae release")
-  lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RP/4e-5 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RP/4e-5 ~ time, data=dung200, type="l", col="black")
-  points(mean_W ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_W ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_W ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_W ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_W ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_W ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(DAM ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 1", ylim=c(0, 1.1*max(dung$DAM, dung0$DAM)))
-  # lines(DAM ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["delta0"], b=0, lty=2, col="red")
-  # 
-  # plot(DAM2 ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 2", ylim=c(0, 1.1*max(dung200$DAM2, dung0$DAM2,params.t["d0M"])))
-  # lines(DAM2 ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM2 ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM2 ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM2 ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM2 ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
-  # abline(a=params.t["d02"], b=0, lty=2, col="red")
-  
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
-  lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
-  lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
-  lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
-  lines(Survival ~ time, data=dung160, type="l", col="chocolate4")
-  lines(Survival ~ time, data=dung200, type="l", col="black")
-  points(Survival ~ Day, data = control_df, pch=21, bg="turquoise1")
-  points(Survival ~ Day, dung_40, pch=21, bg="chocolate1", col="chocolate1", typ="b")
-  points(Survival ~ Day, dung_80, pch=21, bg="chocolate2", col="chocolate2", typ="b")
-  points(Survival ~ Day, dung_120, pch=21, bg="chocolate3", col="chocolate3", typ="b")
-  points(Survival ~ Day, dung_160, pch=21, bg="chocolate4", col="chocolate4", typ="b")
-  points(Survival ~ Day, dung_200, pch=21, bg="black", col="black", typ="b")
-  
-  ########## Low Food ##########
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=0, Dung0=0)
-  dung0 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                            initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                            params.t[1:34],  rtol=1e-6, atol=1e-6,
-                            events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung0
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=0, Dung0=40)
-  dung40 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                             initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                             params.t[1:34],  rtol=1e-6, atol=1e-6,
-                             events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung40
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=0, Dung0=80)
-  dung80 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                             initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                             params.t[1:34],  rtol=1e-6, atol=1e-6,
-                             events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung80
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=0, Dung0=120)
-  dung120 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung120
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=0, Dung0=160)
-  dung160 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung160
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=0, Dung0=200)
-  dung200 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung200
-  
-  control_df = dung_summary %>% filter(Dung_160ml == 0, Infected==0, FoodType=="Low")
-  dung_40 = dung_summary %>% filter(Dung_160ml == 6.4, Infected==0, FoodType=="Low")
-  dung_80 = dung_summary %>% filter(Dung_160ml == 12.8, Infected==0, FoodType=="Low")
-  dung_120 = dung_summary %>% filter(Dung_160ml == 19.2, Infected==0, FoodType=="Low")
-  dung_160 = dung_summary %>% filter(Dung_160ml == 25.6, Infected==0, FoodType=="Low")
-  dung_200 = dung_summary %>% filter(Dung_160ml == 32, Infected==0, FoodType=="Low")
-  
-  
-  par(mfrow=c(2, 2))
-  # plot(F ~ time, data=dung0, type="l", lty=2, col="turquoise1", ylab="Food abundance")
-  # lines(F ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(F ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(F ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(F ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(F ~ time, data=dung200, type="l", col="black")
-  # 
-  # plot(Dung ~ time, data=dung0, type="l", col="turquoise1", ylab="Dung abundance", ylim=c(0,1.1*inits["Dung"]))
-  # lines(Dung ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(Dung ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(Dung ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(Dung ~ time, data=dung200, type="l", col="black")
-  
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
-  lines(LG ~ time, data=dung40, type="l", col="chocolate1")
-  lines(LG ~ time, data=dung80, type="l", col="chocolate2")
-  lines(LG ~ time, data=dung120, type="l", col="chocolate3")
-  lines(LG ~ time, data=dung160, type="l", col="chocolate4")
-  lines(LG ~ time, data=dung200, type="l", col="black")
-  lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
-  lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
-  lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
-  lines(L ~ time, data=dung160, type="l", lty=2, col="chocolate4")
-  lines(L ~ time, data=dung200, type="l", lty=2, col="black")
-  points(mean_L ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_L ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_L ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_L ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_L ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_L ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(e ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0, 1.1*max(dung200$e, dung0$e)), ylab="Snail reserve density")
-  # lines(e ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(e ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(e ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(e ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(e ~ time, data=dung200, type="l", col="black")
-  
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung$RH/0.015, dung0$RH/0.015, control_df$mean_E)))
-  lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RH/0.015 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RH/0.015 ~ time, data=dung200, type="l", col="black")
-  points(mean_E ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_E ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_E ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_E ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_E ~ Day, dung_200, pch=21, bg="black")
-  
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative cercariae release")
-  lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RP/4e-5 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RP/4e-5 ~ time, data=dung200, type="l", col="black")
-  points(mean_W ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_W ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_W ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_W ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_W ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_W ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(DAM ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 1", ylim=c(0, 1.1*max(dung$DAM, dung0$DAM)))
-  # lines(DAM ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["delta0"], b=0, lty=2, col="red")
-  # 
-  # plot(DAM2 ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 2", ylim=c(0, 1.1*max(dung200$DAM2, dung0$DAM2,params.t["d0M"])))
-  # lines(DAM2 ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM2 ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM2 ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM2 ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM2 ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
-  # abline(a=params.t["d02"], b=0, lty=2, col="red")
-  
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
-  lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
-  lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
-  lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
-  lines(Survival ~ time, data=dung160, type="l", col="chocolate4")
-  lines(Survival ~ time, data=dung200, type="l", col="black")
-  points(Survival ~ Day, data = control_df, pch=21, bg="turquoise1")
-  points(Survival ~ Day, dung_40, pch=21, bg="chocolate1", col="chocolate1", typ="b")
-  points(Survival ~ Day, dung_80, pch=21, bg="chocolate2", col="chocolate2", typ="b")
-  points(Survival ~ Day, dung_120, pch=21, bg="chocolate3", col="chocolate3", typ="b")
-  points(Survival ~ Day, dung_160, pch=21, bg="chocolate4", col="chocolate4", typ="b")
-  points(Survival ~ Day, dung_200, pch=21, bg="black", col="black", typ="b")
-  
-  ### Infected ###
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=0)
-  dung0 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                            initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                            params.t[1:34],  rtol=1e-6, atol=1e-6,
-                            events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung0
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=40)
-  dung40 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                             initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                             params.t[1:34],  rtol=1e-6, atol=1e-6,
-                             events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung40
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=80)
-  dung80 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                             initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                             params.t[1:34],  rtol=1e-6, atol=1e-6,
-                             events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung80
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=120)
-  dung120 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung120
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=160)
-  dung160 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung160
-  
-  inits = setinits.Dung(F0 = 0.538, D0 = as.numeric(params.t["DR"]), P0=2.85e-5, Dung0=200)
-  dung200 <- data.frame(lsoda(inits, 0:dur.D, func = "derivs", dllname = "DEBDung_MoA_ingest",
-                              initfunc = "initmod",  nout=2, outnames=c("Survival", "LG"), maxsteps=5e5,
-                              params.t[1:34],  rtol=1e-6, atol=1e-6,
-                              events = list(data = Dung.events(initial.food = 0.538, initial.dung = as.numeric(inits["Dung"])))))
-  dung200
-  
-  control_df = dung_summary %>% filter(Dung_160ml == 0, Infected==1, FoodType=="Low")
-  dung_40 = dung_summary %>% filter(Dung_160ml == 6.4, Infected==1, FoodType=="Low")
-  dung_80 = dung_summary %>% filter(Dung_160ml == 12.8, Infected==1, FoodType=="Low")
-  dung_120 = dung_summary %>% filter(Dung_160ml == 19.2, Infected==1, FoodType=="Low")
-  dung_160 = dung_summary %>% filter(Dung_160ml == 25.6, Infected==1, FoodType=="Low")
-  dung_200 = dung_summary %>% filter(Dung_160ml == 32, Infected==1, FoodType=="Low")
-  
-  
-  par(mfrow=c(2, 2))
-  # plot(F ~ time, data=dung0, type="l", lty=2, col="turquoise1", ylab="Food abundance")
-  # lines(F ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(F ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(F ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(F ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(F ~ time, data=dung200, type="l", col="black")
-  # 
-  # plot(Dung ~ time, data=dung0, type="l", col="turquoise1", ylab="Dung abundance", ylim=c(0,1.1*inits["Dung"]))
-  # lines(Dung ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(Dung ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(Dung ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(Dung ~ time, data=dung200, type="l", col="black")
-  
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
-  lines(LG ~ time, data=dung40, type="l", col="chocolate1")
-  lines(LG ~ time, data=dung80, type="l", col="chocolate2")
-  lines(LG ~ time, data=dung120, type="l", col="chocolate3")
-  lines(LG ~ time, data=dung160, type="l", col="chocolate4")
-  lines(LG ~ time, data=dung200, type="l", col="black")
-  lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
-  lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
-  lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
-  lines(L ~ time, data=dung160, type="l", lty=2, col="chocolate4")
-  lines(L ~ time, data=dung200, type="l", lty=2, col="black")
-  points(mean_L ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_L ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_L ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_L ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_L ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_L ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(e ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0, 1.1*max(dung200$e, dung0$e)), ylab="Snail reserve density")
-  # lines(e ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(e ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(e ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(e ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(e ~ time, data=dung200, type="l", col="black")
-  
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction")
-  lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RH/0.015 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RH/0.015 ~ time, data=dung200, type="l", col="black")
-  points(mean_E ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_E ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_E ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_E ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_E ~ Day, dung_200, pch=21, bg="black")
-  
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,20000), ylab="Cumulative cercariae release")
-  lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
-  lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
-  lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
-  lines(RP/4e-5 ~ time, data=dung160, type="l", col="chocolate4")
-  lines(RP/4e-5 ~ time, data=dung200, type="l", col="black")
-  points(mean_W ~ Day, control_df, pch=21, bg="turquoise1")
-  points(mean_W ~ Day, dung_40, pch=21, bg="chocolate1")
-  points(mean_W ~ Day, dung_80, pch=21, bg="chocolate2")
-  points(mean_W ~ Day, dung_120, pch=21, bg="chocolate3")
-  points(mean_W ~ Day, dung_160, pch=21, bg="chocolate4")
-  points(mean_W ~ Day, dung_200, pch=21, bg="black")
-  
-  # plot(DAM ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 1", ylim=c(0, 1.1*max(dung$DAM, dung0$DAM)))
-  # lines(DAM ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["delta0"], b=0, lty=2, col="red")
-  # 
-  # plot(DAM2 ~ time, data=dung0, type="l", col="turquoise1", ylab="Damage type 2", ylim=c(0, 1.1*max(dung200$DAM2, dung0$DAM2,params.t["d0M"])))
-  # lines(DAM2 ~ time, data=dung40, type="l", col="chocolate1")
-  # lines(DAM2 ~ time, data=dung80, type="l", col="chocolate2")
-  # lines(DAM2 ~ time, data=dung120, type="l", col="chocolate3")
-  # lines(DAM2 ~ time, data=dung160, type="l", col="chocolate4")
-  # lines(DAM2 ~ time, data=dung200, type="l", col="black")
-  # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
-  # abline(a=params.t["d02"], b=0, lty=2, col="red")
-  
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
-  lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
-  lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
-  lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
-  lines(Survival ~ time, data=dung160, type="l", col="chocolate4")
-  lines(Survival ~ time, data=dung200, type="l", col="black")
-  points(Survival ~ Day, data = control_df, pch=21, bg="turquoise1")
-  points(Survival ~ Day, dung_40, pch=21, bg="chocolate1", col="chocolate1", typ="b")
-  points(Survival ~ Day, dung_80, pch=21, bg="chocolate2", col="chocolate2", typ="b")
-  points(Survival ~ Day, dung_120, pch=21, bg="chocolate3", col="chocolate3", typ="b")
-  points(Survival ~ Day, dung_160, pch=21, bg="chocolate4", col="chocolate4", typ="b")
-  points(Survival ~ Day, dung_200, pch=21, bg="black", col="black", typ="b")
-  
-  
+  par(mfrow=c(3, 3))
+  plot(F ~ time, data=dung0, type="l", lty=2, ylab="Food abundance")
+  lines(F ~ time, data=dung, lty=2, col="brown")
+  plot(Dung ~ time, data=dung0, type="l", ylab="Dung abundance", ylim=c(0,1.1*inits["Dung"]))
+  lines(Dung ~ time, data=dung, col="brown")
+  plot(LG ~ time, data=dung0, type="l", ylim=c(10, 1.1*max(dung$LG, dung0$LG)), ylab="Snail shell length")
+  lines(L ~ time, data=dung0, col="black", lty=2, ylab="Snail shell length")
+  lines(LG ~ time, data=dung, col="brown")
+  lines(L ~ time, data=dung, col="brown", lty=2)
+  plot(e ~ time, data=dung0, type="l", ylim=c(0, 1.1*max(dung$e, dung0$e)), ylab="Snail reserve density")
+  lines(e ~ time, data=dung, type="l", col="brown")
+  plot(RH/0.015 ~ time, data=dung0, type="l", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung$RH/0.015, dung0$RH/0.015)))
+  lines(RH/0.015 ~ time, data=dung, type="l", col="brown")
+  plot(RP/4e-5 ~ time, data=dung0, type="l", ylab="Cumulative cercariae release")
+  lines(RP/4e-5  ~ time, data=dung, type="l", col="brown")
+  plot(DAM ~ time, data=dung0, type="l", ylab="Damage type 1", ylim=c(0, 1.1*max(dung$DAM, dung0$DAM)))
+  lines(DAM ~ time, data=dung, type="l", col="brown")
+  abline(a=params.t["delta0"], b=0, lty=2, col="red")
+  plot(DAM2 ~ time, data=dung0, type="l", ylab="Damage type 2", ylim=c(0, 1.1*max(dung$DAM2, dung0$DAM2,params.t["d0M"])))
+  lines(DAM2 ~ time, data=dung, type="l", col="brown")
+  abline(a=params.t["d0M"], b=0, lty=2, col="purple")
+  abline(a=params.t["d02"], b=0, lty=2, col="red")
+  plot(Survival ~ time, data=dung0, type="l", ylim=c(0,1), ylab="Probability of host survival")
+  lines(Survival ~ time, data=dung, type="l", col="brown")
   par(mfrow=c(1,1))
 }
 
 params.t = DEB_parameter_trans(pars)
-params.t["rho"] = 0
-params.t["yED"] = 2e-1
-params.t["kR2"] = 1e-1
-params.t["mR2"] = 3e-4
+# params.t["rho"] = 1
+# params.t["yED"] = 0.5
+params.t["kR2"] = 2e-2
+# # params.t["mR2"] = 0
 #  params.t["kkM"] = 0.1
-params.t["d02"] = 120
-params.t["kk2"] = 3e-3
+params.t["d02"] =80
+params.t["kk2"] = 1e-1
 # #params.t["d02"] = 1
 
 DEB_dung_vis(params.t)
@@ -1462,9 +901,300 @@ make.states<-function(params, inits.R, inits.P, inits.S, duration.R, duration.P,
               L4=result.D$LG, W4=result.D$RP, E4=result.D$RH, SurvD=Survival.D))
 }
 
+# 5 - Prior likelihood
+prior.likelihood.trans = function(x){
+  p = DEB_parameter_trans(x)
+  prior.lik = with(as.list(p),
+                   sum(dbeta(c(yPE, yEF, yEF2, yEF3, yED, yRP, yVE, mP, eh, k, fe), 1, 1, log=T)) + 
+                     sum(dunif(c(sd.L, sd.E, sd.W,
+                                 sd.L2, sd.E2, sd.W2,
+                                 sd.L3, sd.E3, sd.W3,
+                                 sd.L4, sd.E4, sd.W4), min=0, max=10, log=T)) +
+                     sum(dunif(c(ph, alpha, iPM, EM, DR, Fh, muD, kR, delta0, hdelta, theta, mR, hb, 
+                                 rho, kR2, mR2, kk2, d02, kkM, d0M), min=0, max=1000000, log=T)) +
+                     dnorm(iM, mean=0.0183, sd=0.0016, log=T) + dnorm(M, mean=0.004, sd=0.00047, log=T) + dnorm(LM, mean=35, sd=2, log=T)
+  )
+  return(prior.lik)
+}
+
+prior.likelihood = function(x){
+  #x = DEB_parameter_trans(x)
+  prior.lik = with(as.list(x),
+                   sum(dbeta(c(yPE, yEF, yEF2, yEF3, yED, yRP, yVE, mP, eh, k, fe), 1, 1, log=T)) + 
+                     sum(dunif(c(sd.L, sd.E, sd.W,
+                                 sd.L2, sd.E2, sd.W2,
+                                 sd.L3, sd.E3, sd.W3,
+                                 sd.L4, sd.E4, sd.W4), min=0, max=10, log=T)) +
+                     sum(dunif(c(ph, alpha, iPM, EM, DR, Fh, muD, kR, delta0, hdelta, theta, mR, hb, 
+                                 rho, kR2, mR2, kk2, d02, kkM, d0M), min=0, max=1000000, log=T)) +
+                     dnorm(iM, mean=0.0183, sd=0.0016, log=T) + dnorm(M, mean=0.004, sd=0.00047, log=T) + dnorm(LM, mean=35, sd=2, log=T)
+  )
+  return(prior.lik)
+}
+
+# 6 - data likelihood
+
+full.likelihood.trans<-function(x){
+  p = DEB_parameter_trans(x) # Transform the parameters here so they work for the data likelihood
+  
+  # simulate data
+  sim.data = make.states(p, in.R, in.P, in.S, dur.R, dur.P, dur.S, Feed.R, Feed.S, w.t=7)
+  
+  # data likelihood
+  e.c <- 1
+  
+  ## observation model
+  gammaH <- 0.015 # C content of eggs
+  gammaP <- 4e-5 # C content of cercs
+  
+  ## convert predictions into correct count units
+  l.temp<-sim.data$L
+  n.temp<-sim.data$RH/gammaH
+  w.temp<-sim.data$RP/gammaP
+  
+  
+  l2.temp<-sim.data$L2
+  n2.temp<-sim.data$E2/gammaH
+  w2.temp<-sim.data$W2/gammaP
+  
+  l3f.temp<-sim.data$L3F
+  l3c.temp<-sim.data$L3C
+  n3.temp<-sim.data$E3/gammaH
+  w3.temp<-sim.data$W3/gammaP
+  
+  l4.temp<-sim.data$L4
+  n4.temp<-sim.data$E4/gammaH
+  w4.temp<-sim.data$W4/gammaP
+  
+  SR.temp<-sim.data$SurvR
+  SP.temp<-sim.data$SurvP
+  SS.temp<-sim.data$SurvS
+  SD.temp<-sim.data$SurvD
+  
+  sd.L<-as.numeric(x["sd.L"])
+  sd.L2<-as.numeric(x["sd.L2"])
+  sd.L3<-as.numeric(x["sd.L3"])
+  sd.L4<-as.numeric(x["sd.L4"])
+  
+  sd.E<-as.numeric(x["sd.E"])
+  sd.E2<-as.numeric(x["sd.E2"])
+  sd.E3<-as.numeric(x["sd.E3"])
+  sd.E4<-as.numeric(x["sd.E4"])
+  
+  sd.W<-as.numeric(x["sd.W"])
+  sd.W2<-as.numeric(x["sd.W2"])
+  sd.W3<-as.numeric(x["sd.W3"])
+  sd.W4<-as.numeric(x["sd.W4"])
+  
+  # Avoids simulations that fell short
+  NObs = length(data$L)
+  NObs2 = length(data$L2)
+  if(length(n.temp) != NObs){print("Simulation 1 too short"); print(length(n.temp) - NObs); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(length(n2.temp) != NObs2){print("Simulation 2 too short"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}    
+  
+  if(anyNA(l.temp)){print("NaNs in l.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l2.temp)){print("NaNs in l2.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l3f.temp)){print("NaNs in l3f.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l3c.temp)){print("NaNs in l3c.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l4.temp)){print("NaNs in l4.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SR.temp)){print("NaNs in SR.temp");return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SP.temp)){print("NaNs in SP.temp");return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SS.temp)){print("NaNs in SS.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SD.temp)){print("NaNs in SD.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  
+  ## likelihoods from food gradient
+  llik.L<- sum(dnorm(log(data$L), mean=log(l.temp), sd=sd.L, log=TRUE), na.rm=T)
+  llik.Negg<- sum(dnorm(log(data$Negg+e.c), mean=log(n.temp+e.c), sd=sd.E, log=TRUE), na.rm=T)
+  llik.Nworms<- sum(dnorm(log(data$Nworms+e.c), mean=log(w.temp+e.c), sd=sd.W, log=TRUE), na.rm=T)
+  
+  SR =SR.temp[which(data$Alive == 1)]
+  llik.Survival <- sum(log(SR))
+  
+  ## likelihoods from periodic starvation
+  llik.L2<- sum(dnorm(log(data$L2), mean=log(l2.temp), sd=sd.L2, log=TRUE), na.rm=T)
+  llik.Negg2<- sum(dnorm(log(data$Negg2+e.c), mean=log(n2.temp+e.c), sd=sd.E2, log=TRUE), na.rm=T)
+  llik.Nworms2<- sum(dnorm(log(data$Nworms2+e.c), mean=log(w2.temp+e.c), sd=sd.W2, log=TRUE), na.rm=T)
+  
+  SP =SP.temp[which(data$Alive2 == 1)]
+  llik.Survival2 <- sum(log(SP)) 
+  
+  ## likelihoods from size comp
+  llik.L3f<- sum(dnorm(log(data$L3), mean=log(l3f.temp), sd=sd.L3, log=TRUE), na.rm=T)
+  llik.L3c<- sum(dnorm(log(data$L3C[c(273:1344, 1425:1824)]), mean=log(l3c.temp[c(273:1344, 1425:1824)]), sd=sd.L3, log=TRUE), na.rm=T)
+  llik.Nworms3<- sum(dnorm(log(data$Nworms3[1:1344]+e.c), mean=log(w3.temp[1:1344] + e.c), sd=sd.W3, log=TRUE), na.rm=T)
+  
+  SS =SS.temp[which(data$Alive3 == 1)]
+  llik.Survival3 <- sum(log(SS)) 
+  
+  ## likelihoods from dung
+  llik.L4<- sum(dnorm(log(data$L4), mean=log(l4.temp), sd=sd.L4, log=TRUE), na.rm=T)
+  llik.Negg4<- sum(dnorm(log(data$Negg4+e.c), mean=log(n4.temp+e.c), sd=sd.E4, log=TRUE), na.rm=T)
+  llik.Nworms4<- sum(dnorm(log(data$Nworms4+e.c), mean=log(w4.temp+e.c), sd=sd.W4, log=TRUE), na.rm=T)
+  
+  SD =SD.temp[which(data$Alive4 == 1)]
+  llik.Survival4 <- sum(log(SD)) 
+  
+  llik<-(llik.L + llik.Negg + llik.Nworms + llik.Survival + 
+           llik.L2 + llik.Negg2 + llik.Nworms2 + llik.Survival2 +
+           llik.L3f + llik.L3c + llik.Nworms3 + llik.Survival3+
+           llik.L4 + llik.Negg4 + llik.Nworms4 + llik.Survival4)
+  
+  if(is.na(llik)|!is.finite(llik)){
+    print("Infinite NLL")
+    ll.vector = c(llik.L, llik.Negg, llik.Nworms, llik.Survival, 
+                   llik.L2, llik.Negg2, llik.Nworms2, llik.Survival2,
+                   llik.L3f, llik.L3c, llik.Nworms3, llik.Survival3,
+                   llik.L4, llik.Negg4, llik.Nworms4, llik.Survival4)
+    print(ll.vector)
+    print(paste0("This piece is NA: ", which(is.na(ll.vector))))
+    print(paste0("This piece is NaN: ", which(!is.finite(ll.vector))))
+    return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  
+  lprior = prior.likelihood.trans(x) # don't transform the parameters here because it happens inside this function
+  #return(llik + lprior)
+  print(llik + lprior)
+  return(list("log.density" = (llik + lprior), "data" = llik, "prior" = lprior))
+}
+
+full.likelihood<-function(x){
+  #p = DEB_parameter_trans(x) # Transform the parameters here so they work for the data likelihood
+  
+  # simulate data
+  sim.data = make.states(x, in.R, in.P, in.S, dur.R, dur.P, dur.S, Feed.R, Feed.S, w.t=7)
+  
+  # data likelihood
+  e.c <- 1
+  
+  ## observation model
+  gammaH <- 0.015 # C content of eggs
+  gammaP <- 4e-5 # C content of cercs
+  
+  ## convert predictions into correct count units
+  l.temp<-sim.data$L
+  n.temp<-sim.data$RH/gammaH
+  w.temp<-sim.data$RP/gammaP
+ 
+  l2.temp<-sim.data$L2
+  n2.temp<-sim.data$E2/gammaH
+  w2.temp<-sim.data$W2/gammaP
+  
+  l3f.temp<-sim.data$L3F
+  l3c.temp<-sim.data$L3C
+  n3.temp<-sim.data$E3/gammaH
+  w3.temp<-sim.data$W3/gammaP
+  
+  l4.temp<-sim.data$L4
+  n4.temp<-sim.data$E4/gammaH
+  w4.temp<-sim.data$W4/gammaP
+  
+  SR.temp<-sim.data$SurvR
+  SP.temp<-sim.data$SurvP
+  SS.temp<-sim.data$SurvS
+  SD.temp<-sim.data$SurvD
+
+  sd.L<-as.numeric(x["sd.L"])
+  sd.L2<-as.numeric(x["sd.L2"])
+  sd.L3<-as.numeric(x["sd.L3"])
+  sd.L4<-as.numeric(x["sd.L3"])
+  
+  sd.E<-as.numeric(x["sd.E"])
+  sd.E2<-as.numeric(x["sd.E2"])
+  sd.E3<-as.numeric(x["sd.E3"])
+  sd.E4<-as.numeric(x["sd.E4"])
+  
+  sd.W<-as.numeric(x["sd.W"])
+  sd.W2<-as.numeric(x["sd.W2"])
+  sd.W3<-as.numeric(x["sd.W3"])
+  sd.W4<-as.numeric(x["sd.W4"])
+  
+  # Avoids simulations that fell short
+  NObs = length(data$L)
+  NObs2 = length(data$L2)
+  if(length(n.temp) != NObs){print("Simulation 1 too short"); print(length(n.temp) - NObs); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(length(n2.temp) != NObs2){print("Simulation 2 too short"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}    
+  
+  if(anyNA(l.temp)){print("NaNs in l.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l2.temp)){print("NaNs in l2.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l3f.temp)){print("NaNs in l3f.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l3c.temp)){print("NaNs in l3c.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(l4.temp)){print("NaNs in l4.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SR.temp)){print("NaNs in SR.temp");return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SP.temp)){print("NaNs in SP.temp");return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SS.temp)){print("NaNs in SS.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  if(anyNA(SD.temp)){print("NaNs in SD.temp"); return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  
+  ## likelihoods from food gradient
+  llik.L<- sum(dnorm(log(data$L), mean=log(l.temp), sd=sd.L, log=TRUE), na.rm=T)
+  llik.Negg<- sum(dnorm(log(data$Negg+e.c), mean=log(n.temp+e.c), sd=sd.E, log=TRUE), na.rm=T)
+  llik.Nworms<- sum(dnorm(log(data$Nworms+e.c), mean=log(w.temp+e.c), sd=sd.W, log=TRUE), na.rm=T)
+  
+  SR =SR.temp[which(data$Alive == 1)]
+  llik.Survival <- sum(log(SR))
+  
+  ## likelihoods from periodic starvation
+  llik.L2<- sum(dnorm(log(data$L2), mean=log(l2.temp), sd=sd.L2, log=TRUE), na.rm=T)
+  llik.Negg2<- sum(dnorm(log(data$Negg2+e.c), mean=log(n2.temp+e.c), sd=sd.E2, log=TRUE), na.rm=T)
+  llik.Nworms2<- sum(dnorm(log(data$Nworms2+e.c), mean=log(w2.temp+e.c), sd=sd.W2, log=TRUE), na.rm=T)
+  
+  SP =SP.temp[which(data$Alive2 == 1)]
+  llik.Survival2 <- sum(log(SP)) 
+  
+  ## likelihoods from size comp
+  llik.L3f<- sum(dnorm(log(data$L3), mean=log(l3f.temp), sd=sd.L3, log=TRUE), na.rm=T)
+  llik.L3c<- sum(dnorm(log(data$L3C[c(273:1344, 1425:1824)]), mean=log(l3c.temp[c(273:1344, 1425:1824)]), sd=sd.L3, log=TRUE), na.rm=T)
+  llik.Nworms3<- sum(dnorm(log(data$Nworms3[1:1344]+e.c), mean=log(w3.temp[1:1344] + e.c), sd=sd.W3, log=TRUE), na.rm=T)
+  
+  SS =SS.temp[which(data$Alive3 == 1)]
+  llik.Survival3 <- sum(log(SS)) 
+  
+  ## likelihoods from dung
+  llik.L4<- sum(dnorm(log(data$L4), mean=log(l4.temp), sd=sd.L4, log=TRUE), na.rm=T)
+  llik.Negg4<- sum(dnorm(log(data$Negg4+e.c), mean=log(n4.temp+e.c), sd=sd.E4, log=TRUE), na.rm=T)
+  llik.Nworms4<- sum(dnorm(log(data$Nworms4+e.c), mean=log(w4.temp+e.c), sd=sd.W4, log=TRUE), na.rm=T)
+  
+  SD =SD.temp[which(data$Alive4 == 1)]
+  llik.Survival4 <- sum(log(SD)) 
+  
+  llik<-(llik.L + llik.Negg + llik.Nworms + llik.Survival + 
+           llik.L2 + llik.Negg2 + llik.Nworms2 + llik.Survival2 +
+           llik.L3f + llik.L3c + llik.Nworms3 + llik.Survival3+
+           llik.L4 + llik.Negg4 + llik.Nworms4 + llik.Survival4)
+  
+  if(is.na(llik)|!is.finite(llik)){
+    print("Infinite NLL")
+    ll.vector = c(llik.L, llik.Negg, llik.Nworms, llik.Survival, 
+                  llik.L2, llik.Negg2, llik.Nworms2, llik.Survival2,
+                  llik.L3f, llik.L3c, llik.Nworms3, llik.Survival3, 
+                    llik.L4, llik.Negg4, llik.Nworms4, llik.Survival4)
+    print(paste0("This piece is NA: ", which(is.na(ll.vector))))
+    print(paste0("This piece is NaN: ", which(!is.finite(ll.vector))))
+    return(list("log.density" = -1e6, "data" = -1e6, "prior" = -1e6))}
+  
+  lprior = prior.likelihood(x) # don't transform the parameters here because it happens inside this function
+  #return(llik + lprior)
+  return(list("log.density" = llik + lprior, "data" = llik, "prior" = lprior))
+}
+
+full.likelihood(params.t)
+
+# 7. Parameter transformation and back transformation
+### Tuning ###
+# variances = diag(length(params))*0.00001
+# model_fit = MCMC(full.likelihood.trans, init=params, scale=as.matrix(variances), adapt=10000, acc.rate = 0.3, n=10000)
+# plot(model_fit$log.p)
 setwd("C:/Users/dcivite/OneDrive - Emory/RData")
 samps = readRDS("Dung_fitting2.Rda")
 pars = samps$samples[which.max(samps$log.p),]
+
+full.likelihood.trans(pars)
+
+variances = samps$cov.jump
+
+model_fit = MCMC(full.likelihood.trans, init=pars, scale=as.matrix(variances), adapt=500, acc.rate = 0.3, n=500)
+plot(model_fit$log.p)
+model_fit$samples[which.max(model_fit$log.p),]
+
+saveRDS(model_fit, file="Dung_fitting2.Rda")
 
 
 To.plot.DEB.Dung<-function(params, duration=dur.D){
