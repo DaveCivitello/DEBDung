@@ -255,12 +255,13 @@ DEB_dung_vis = function(pars){
   # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
   # lines(Dung ~ time, data=dung200, type="l", col="black")
   
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
+  plot(LG ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
   lines(LG ~ time, data=dung40, type="l", col="chocolate1")
   lines(LG ~ time, data=dung80, type="l", col="chocolate2")
   lines(LG ~ time, data=dung120, type="l", col="chocolate3")
   lines(LG ~ time, data=dung160, type="l", col="chocolate4")
   lines(LG ~ time, data=dung200, type="l", col="black")
+  lines(L ~ time, data=dung0, type="l", lwd=3, lty=2, col="turquoise1")
   lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
   lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
   lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
@@ -280,7 +281,7 @@ DEB_dung_vis = function(pars){
   # lines(e ~ time, data=dung160, type="l", col="chocolate4")
   # lines(e ~ time, data=dung200, type="l", col="black")
   
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung0$RH/0.015, control_df$mean_E)))
+  plot(RH/0.015 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung0$RH/0.015, control_df$mean_E)))
   lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
@@ -293,7 +294,7 @@ DEB_dung_vis = function(pars){
   points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
   points(mean_E ~ Day, dung_200, pch=21, bg="black")
   
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative cercariae release")
+  plot(RP/4e-5 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylab="Cumulative cercariae release")
   lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
@@ -323,7 +324,7 @@ DEB_dung_vis = function(pars){
   # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
   # abline(a=params.t["d02"], b=0, lty=2, col="red")
   
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
+  plot(Survival ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
   lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
   lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
   lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
@@ -402,12 +403,13 @@ DEB_dung_vis = function(pars){
   # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
   # lines(Dung ~ time, data=dung200, type="l", col="black")
   
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
+  plot(LG ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
   lines(LG ~ time, data=dung40, type="l", col="chocolate1")
   lines(LG ~ time, data=dung80, type="l", col="chocolate2")
   lines(LG ~ time, data=dung120, type="l", col="chocolate3")
   lines(LG ~ time, data=dung160, type="l", col="chocolate4")
   lines(LG ~ time, data=dung200, type="l", col="black")
+  lines(L ~ time, data=dung0, type="l", lty=2, col="turquoise1")
   lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
   lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
   lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
@@ -427,7 +429,7 @@ DEB_dung_vis = function(pars){
   # lines(e ~ time, data=dung160, type="l", col="chocolate4")
   # lines(e ~ time, data=dung200, type="l", col="black")
   
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung0$RH/0.015, control_df$mean_E)))
+  plot(RH/0.015 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung0$RH/0.015, control_df$mean_E)))
   lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
@@ -440,7 +442,7 @@ DEB_dung_vis = function(pars){
   points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
   points(mean_E ~ Day, dung_200, pch=21, bg="black")
   
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,20000), ylab="Cumulative cercariae release")
+  plot(RP/4e-5 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(0,20000), ylab="Cumulative cercariae release")
   lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
@@ -470,7 +472,7 @@ DEB_dung_vis = function(pars){
   # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
   # abline(a=params.t["d02"], b=0, lty=2, col="red")
   
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
+  plot(Survival ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
   lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
   lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
   lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
@@ -550,12 +552,13 @@ DEB_dung_vis = function(pars){
   # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
   # lines(Dung ~ time, data=dung200, type="l", col="black")
   
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
+  plot(LG ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
   lines(LG ~ time, data=dung40, type="l", col="chocolate1")
   lines(LG ~ time, data=dung80, type="l", col="chocolate2")
   lines(LG ~ time, data=dung120, type="l", col="chocolate3")
   lines(LG ~ time, data=dung160, type="l", col="chocolate4")
   lines(LG ~ time, data=dung200, type="l", col="black")
+  lines(L ~ time, data=dung0, type="l", lwd=3, lty=2, col="turquoise1")
   lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
   lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
   lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
@@ -575,7 +578,7 @@ DEB_dung_vis = function(pars){
   # lines(e ~ time, data=dung160, type="l", col="chocolate4")
   # lines(e ~ time, data=dung200, type="l", col="black")
   
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung0$RH/0.015, control_df$mean_E)))
+  plot(RH/0.015 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylab="Cumulative host reproduction", ylim=c(0, 1.1*max(dung0$RH/0.015, control_df$mean_E)))
   lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
@@ -588,7 +591,7 @@ DEB_dung_vis = function(pars){
   points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
   points(mean_E ~ Day, dung_200, pch=21, bg="black")
   
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative cercariae release")
+  plot(RP/4e-5 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylab="Cumulative cercariae release")
   lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
@@ -618,7 +621,7 @@ DEB_dung_vis = function(pars){
   # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
   # abline(a=params.t["d02"], b=0, lty=2, col="red")
   
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
+  plot(Survival ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
   lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
   lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
   lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
@@ -697,12 +700,13 @@ DEB_dung_vis = function(pars){
   # lines(Dung ~ time, data=dung160, type="l", col="chocolate4")
   # lines(Dung ~ time, data=dung200, type="l", col="black")
   
-  plot(LG ~ time, data=dung0, type="l", col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
+  plot(LG ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(10, 20), ylab="Snail shell length")
   lines(LG ~ time, data=dung40, type="l", col="chocolate1")
   lines(LG ~ time, data=dung80, type="l", col="chocolate2")
   lines(LG ~ time, data=dung120, type="l", col="chocolate3")
   #lines(LG ~ time, data=dung160, type="l", col="chocolate4")
   #lines(LG ~ time, data=dung200, type="l", col="black")
+  lines(L ~ time, data=dung0, type="l",  lwd=3, lty=2, col="turquoise1")
   lines(L ~ time, data=dung40, type="l", lty=2, col="chocolate1")
   lines(L ~ time, data=dung80, type="l", lty=2, col="chocolate2")
   lines(L ~ time, data=dung120, type="l", lty=2, col="chocolate3")
@@ -722,7 +726,7 @@ DEB_dung_vis = function(pars){
   # lines(e ~ time, data=dung160, type="l", col="chocolate4")
   # lines(e ~ time, data=dung200, type="l", col="black")
   
-  plot(RH/0.015 ~ time, data=dung0, type="l", col="turquoise1", ylab="Cumulative host reproduction")
+  plot(RH/0.015 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylab="Cumulative host reproduction")
   lines(RH/0.015 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RH/0.015 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RH/0.015 ~ time, data=dung120, type="l", col="chocolate3")
@@ -735,7 +739,7 @@ DEB_dung_vis = function(pars){
   #points(mean_E ~ Day, dung_160, pch=21, bg="chocolate4")
   #points(mean_E ~ Day, dung_200, pch=21, bg="black")
   
-  plot(RP/4e-5 ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,20000), ylab="Cumulative cercariae release")
+  plot(RP/4e-5 ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(0,20000), ylab="Cumulative cercariae release")
   lines(RP/4e-5 ~ time, data=dung40, type="l", col="chocolate1")
   lines(RP/4e-5 ~ time, data=dung80, type="l", col="chocolate2")
   lines(RP/4e-5 ~ time, data=dung120, type="l", col="chocolate3")
@@ -765,7 +769,7 @@ DEB_dung_vis = function(pars){
   # abline(a=params.t["d0M"], b=0, lty=2, col="purple")
   # abline(a=params.t["d02"], b=0, lty=2, col="red")
   
-  plot(Survival ~ time, data=dung0, type="l", col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
+  plot(Survival ~ time, data=dung0, type="l", lwd=3, col="turquoise1", ylim=c(0,1.1), ylab="Probability of host survival")
   lines(Survival ~ time, data=dung40, type="l", col="chocolate1")
   lines(Survival ~ time, data=dung80, type="l", col="chocolate2")
   lines(Survival ~ time, data=dung120, type="l", col="chocolate3")
@@ -783,13 +787,15 @@ DEB_dung_vis = function(pars){
 }
 
 params.t = DEB_parameter_trans(pars)
-# params.t["rho"] = 1
-# params.t["yED"] = 1.5e-1
-# params.t["kR2"] = 1e-1
-# params.t["mR2"] = 3e-5
-# #  params.t["kkM"] = 0.1
-# params.t["d02"] = 120
-# params.t["kk2"] = 2e-3
+params.t["rho"] = 1e-5 # smaller number favors dung (ratio of consumption rates)
+params.t["yEF3"] = .2
+params.t["yED"] = 2.5e-1
+params.t["kR2"] = 0.1
+params.t["mR2"] = 1e-3
+params.t["kkM"] = 0#2e-2
+# params.t["d02"] = 80
+params.t["d0M"] = 60
+# params.t["kk2"] = 1e-3
 # # #params.t["d02"] = 1
 
 DEB_dung_vis(params.t)
