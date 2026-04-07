@@ -40,7 +40,7 @@ setwd("C:/Users/dcivite/OneDrive - Emory/RData")
 data = read.csv("ResourceSupplyExp.csv")
 data2 = read.csv("PeriodicStarveExp.csv")
 data3 = read.csv("Size_comp_LT.csv")
-data4 = read.csv("DungLTExp.csv")
+data4 = read.csv("Dung_LT_vetted.csv")
 
 data = list(t = data$Date, L = data$Length, Negg = data$C_Eggs, Nworms = data$C_Worms, Alive=data$Last_Alive,
             L2 = data2$Length, Negg2 = data2$C_Eggs, Nworms2 = data2$C_Worms, Alive2=data2$Last_Alive,
@@ -224,11 +224,11 @@ DEB_dung_vis = function(pars){
 params.t = DEB_parameter_trans(pars)
 # params.t["rho"] = 1
 # params.t["yED"] = 0.5
-params.t["kR2"] = 2e-2
+#params.t["kR2"] = 2e-2
 # # params.t["mR2"] = 0
 #  params.t["kkM"] = 0.1
-params.t["d02"] =80
-params.t["kk2"] = 1e-1
+#params.t["d02"] =80
+#params.t["kk2"] = 1e-1
 # #params.t["d02"] = 1
 
 DEB_dung_vis(params.t)
@@ -799,18 +799,20 @@ solve.DEB.Dung<-function(params, duration=dur.D){
     HF_D0.16_U, HF_D0.16_U, HF_D0.16_U, HF_D0.16_U, HF_D0.16_U, HF_D0.16_U,
     HF_D0.20_U, HF_D0.20_U, HF_D0.20_U, HF_D0.20_U, HF_D0.20_U, HF_D0.20_U,
     
-    #High food Infecteds (n=47)
-    HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, #n=8
+    #High food Infecteds (n=45)
+    HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, HF_D0_I, #n=8, 0 dung_160
     
     HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, 
-    HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, #n=13
+    HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, HF_D0.04_I, #n=12, 6.4 dung_160
     
     HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, HF_D0.08_I,
-    HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, #n=10
+    HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, HF_D0.08_I, #n=10, 12.8 dung_160
     
-    HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, #n=8
-    HF_D0.16_I, HF_D0.16_I, HF_D0.16_I, HF_D0.16_I, HF_D0.16_I, #n=5
-    HF_D0.20_I, HF_D0.20_I, HF_D0.20_I, #n=3
+    HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, HF_D0.12_I, #n=7, 19.2 dung_160
+    
+    HF_D0.16_I, HF_D0.16_I, HF_D0.16_I, HF_D0.16_I, #n=5, 25.6 dung_160
+    
+    HF_D0.20_I, HF_D0.20_I, HF_D0.20_I, #n=3, 32.0 dung_160
     
     # Low food Uninfecteds (n=36)
     LF_D0_U, LF_D0_U, LF_D0_U, LF_D0_U, LF_D0_U, LF_D0_U, #n=6
@@ -820,19 +822,19 @@ solve.DEB.Dung<-function(params, duration=dur.D){
     LF_D0.16_U, LF_D0.16_U, LF_D0.16_U, LF_D0.16_U, LF_D0.16_U, LF_D0.16_U, 
     LF_D0.20_U, LF_D0.20_U, LF_D0.20_U, LF_D0.20_U, LF_D0.20_U, LF_D0.20_U, 
     
-    #Low food Infecteds (n=43)
-    LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, #n=10
+    #Low food Infecteds (n=40)
+    LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, LF_D0_I, #n=10, 0 dung_160
     
-    LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, #n=11
+    LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, #n=11, 6.4 dung_160
     LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, LF_D0.04_I, 
     
-    LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, #n=11
-    LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I,
+    LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, #n=10, 12.8 dung_160
+    LF_D0.08_I, LF_D0.08_I, LF_D0.08_I, 
     
-    LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, #n=10
-    LF_D0.12_I, LF_D0.12_I, LF_D0.12_I,
+    LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, LF_D0.12_I, #n=9
+    LF_D0.12_I, LF_D0.12_I, LF_D0.12_I
     
-    LF_D0.16_I #n=1 !!!No individuals from highest dung treatment infected at low food !!!
+    # !!!No confirmed infected individuals from the two highest dung treatment infected at low food !!!
   )
   result
   
@@ -879,21 +881,21 @@ make.states<-function(params, inits.R, inits.P, inits.S, duration.R, duration.P,
   # Dung experiment
   result.D = solve.DEB.Dung(params)
   result.D = extract.data(result.D)
-  # This fix fore survival data is currently specific to sample size (162) and duration (17) of the experiment
+  # This fix fore survival data is currently specific to sample size (157) and duration (17) of the experiment
   Survival.D = result.D$Survival
   # Conditions the survival probability to 1 through diagnosis for the infected
     # Separate out infecteds
-    HF_U = Survival.D[1:(36*17)]
-    HF_I = Survival.D[((36*17)+1):(83*17)]
-    LF_U = Survival.D[((83*17)+1):(119*17)]
-    LF_I = Survival.D[-(1:((119*17)))]
+    HF_U = Survival.D[1:(36*17)] # 36
+    HF_I = Survival.D[((36*17)+1):(81*17)] # 45 more
+    LF_U = Survival.D[((81*17)+1):(117*17)] # 36 more
+    LF_I = Survival.D[((117*17)+1):(157*17)] # 40 more
     # Condition on diagnosis
-    HF_I[which(1:799 %% 17 %in% 1:5)] = 1 # conditions on diagnosis
-    LF_I[which(1:731 %% 17 %in% 1:5)] = 1 # conditions on diagnosis
+    HF_I[which(1:765 %% 17 %in% 1:5)] = 1 # conditions on diagnosis
+    LF_I[which(1:680 %% 17 %in% 1:5)] = 1 # conditions on diagnosis
   # Reassemble
   Survival.D = c(HF_U, HF_I, LF_U, LF_I)
   # Aligns for interval censoring
-  Survival.D[-((1:162)*17)] = Survival.D[-((1:162)*17)] - Survival.D[-(1+(0:161)*17)]
+  Survival.D[-((1:157)*17)] = Survival.D[-((1:157)*17)] - Survival.D[-(1+(0:156)*17)]
 
   return(list(time=result.R$time, L=result.R$LG, RH=result.R$RH, RP=result.R$RP, SurvR=Survival.R, 
               L2=result.P$LG, W2=result.P$RP, E2=result.P$RH, SurvP=Survival.P, 
@@ -1061,7 +1063,7 @@ full.likelihood<-function(x){
   
   # simulate data
   sim.data = make.states(x, in.R, in.P, in.S, dur.R, dur.P, dur.S, Feed.R, Feed.S, w.t=7)
-  
+
   # data likelihood
   e.c <- 1
   
@@ -1107,6 +1109,7 @@ full.likelihood<-function(x){
   sd.W3<-as.numeric(x["sd.W3"])
   sd.W4<-as.numeric(x["sd.W4"])
   
+
   # Avoids simulations that fell short
   NObs = length(data$L)
   NObs2 = length(data$L2)
