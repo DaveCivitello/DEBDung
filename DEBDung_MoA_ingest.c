@@ -56,7 +56,7 @@ double TankVol = 0.160;
 double DungMass = 1000*y[10]*TankVol; 
 
 /* Toxicant effect. s = stress coefficient */
-double s = (1 + kkM*(fmax(y[8] - d0M, 0)));
+double s = kkM*(fmax(y[8] - d0M, 0));
 
 /* Other Schito-DEB models use max ingestion rate, half-saturation constant, but here we need max ingestion rate attack rate, a, to set up SU for ingestion */
 double a = iM/Fh;
